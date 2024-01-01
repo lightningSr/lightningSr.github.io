@@ -13,20 +13,20 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="John Doe">
+  <meta name="author" content="Lightning">
   <meta name="keywords" content="">
   
     <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:title" content="Hexo+fluid+github">
+<meta property="og:url" content="http://lightningsr.github.io/index.html">
+<meta property="og:site_name" content="Hexo+fluid+github">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="Lightning">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Hexo</title>
+  <title>Hexo+fluid+github</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -58,7 +58,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"lightningsr.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -221,7 +221,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/01/01/hexo+github%E4%BD%BF%E7%94%A8/" target="_self">
+          <img src="/image/post/hexo.jpg" srcset="/img/loading.gif" lazyload alt="Hexo使用">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/2024/01/01/hexo+github%E4%BD%BF%E7%94%A8/" target="_self">
@@ -230,7 +236,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/hexo+github%E4%BD%BF%E7%94%A8/" target="_self">
+      <a class="index-excerpt " href="/2024/01/01/hexo+github%E4%BD%BF%E7%94%A8/" target="_self">
         <div>
           welcome to my personnel blog!This blog is writing to introduce and record the basic using of hexo, as well as posting blog to github.In order to deploy blog on github.io, Nodejs and Hexo are required
         </div>
@@ -240,12 +246,21 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 16:11" pubdate>
+            <time datetime="2024-01-01 19:00" pubdate>
               2024-01-01
             </time>
           </div>
         
         
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Hexo/">#Hexo</a>
+            
+              <a href="/tags/Fluid/">#Fluid</a>
+            
+          </div>
         
       </div>
     </article>
