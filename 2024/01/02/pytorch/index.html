@@ -1,0 +1,687 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Lightning">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="This blog is written to introduce the basic use of pytorch, including the construction of custom dataset and neural network, as well as the function of training and validation. 一. 训练前1. 优化函数、损失函数选择&#96;im">
+<meta property="og:type" content="article">
+<meta property="og:title" content="the basic use of Pytorch">
+<meta property="og:url" content="http://lightningsr.github.io/2024/01/02/pytorch/index.html">
+<meta property="og:site_name" content="Lightning&#39;s Zone">
+<meta property="og:description" content="This blog is written to introduce the basic use of pytorch, including the construction of custom dataset and neural network, as well as the function of training and validation. 一. 训练前1. 优化函数、损失函数选择&#96;im">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lightningsr.github.io/image/post/Pytorch.png">
+<meta property="article:published_time" content="2024-01-02T07:02:31.000Z">
+<meta property="article:modified_time" content="2024-01-02T09:15:57.994Z">
+<meta property="article:author" content="Lightning">
+<meta property="article:tag" content="Pytorch">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://lightningsr.github.io/image/post/Pytorch.png">
+  
+  
+  
+  <title>the basic use of Pytorch - Lightning&#39;s Zone</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"lightningsr.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="the basic use of Pytorch"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-02 15:02" pubdate>
+          2024年1月2日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          13 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">the basic use of Pytorch</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>This blog is written to introduce the basic use of pytorch, including the construction of custom dataset and neural network, as well as the function of training and validation.</p>
+<h2 id="一-训练前"><a href="#一-训练前" class="headerlink" title="一. 训练前"></a>一. 训练前</h2><h3 id="1-优化函数、损失函数选择"><a href="#1-优化函数、损失函数选择" class="headerlink" title="1. 优化函数、损失函数选择"></a>1. 优化函数、损失函数选择</h3><pre><code class="hljs">`import torch`  
+  
+`from torch.utils.data import Dataset`
+</code></pre>
+<ol>
+<li><p><code>torch.nn</code>中有诸多损失函数，常用的如<code>loss_f = torch.nn.CrossEntropyLoss()</code>  </p>
+</li>
+<li><p><code>torch.optim</code>中为优化函数，常用的如<code>opt = torch.optim.Adam(module.parameters(),lr=learning_rate)</code>  </p>
+<p> 其中第一个参数为模型的所有参数，第二个参数为超参数学习率  </p>
+</li>
+<li><p>模型的参数可由如下代码获得,并且在训练之前设置参数为可优化<br> <code>for param in model.parameters():</code><br> <code>   param.requires_grad = True</code></p>
+</li>
+<li><p>学习率在训练中动态调整，<code>torch.optim.lr_scheduler</code>中存放了调整函数，常用的如<code>scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(eta_min = 1e-6,optimizer = opt,T_0=5)</code></p>
+</li>
+</ol>
+<h3 id="2-GPU"><a href="#2-GPU" class="headerlink" title="2. GPU"></a>2. GPU</h3><ol>
+<li><p>选择可用的GPU <code>device = &quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot; </code>  </p>
+</li>
+<li><p>将模型、损失函数移动到device上<br> <code>model = model.to(device=device)</code><br> <code>loss_f = loss_f.to(device=device)</code>  </p>
+</li>
+<li><p>在训练过程中将数据移动到cuda上，示例代码如下  </p>
+<p> <code>for batch, datas in enumerate(train_loader):</code><br> <code>   x, y = datas</code><br> <code>   if device == &#39;cuda&#39;: x, y = x.cuda(),y.cuda()</code></p>
+</li>
+</ol>
+<h2 id="二-数据集"><a href="#二-数据集" class="headerlink" title="二. 数据集"></a>二. 数据集</h2><h3 id="1-继承torch自带的数据集类"><a href="#1-继承torch自带的数据集类" class="headerlink" title="1. 继承torch自带的数据集类"></a>1. 继承torch自带的数据集类</h3><pre><code class="hljs">`from torch.utils.data import Dataset`  
+</code></pre>
+<h4 id="1-1-类声明"><a href="#1-1-类声明" class="headerlink" title="1.1 类声明"></a>1.1 类声明</h4><p>   <code>class yourDatasetName(Dataset):</code><br>   重写<br>   <code>def __init__(self,data,label) -&gt; None:</code><br>   <code>def __len__(self):</code><br>   <code>def __getitem__(self,idx)</code></p>
+<h4 id="1-2-def-init-parameter…"><a href="#1-2-def-init-parameter…" class="headerlink" title="1.2 def init(parameter…)"></a>1.2 def <strong>init</strong>(parameter…)</h4><pre><code class="hljs">该函数用提供的（参数）data和标签构建数据集，转化data和label为`torch.tensor结构`，同时以类成员的方式保存转化后的结果。
+</code></pre>
+<h5 id="三种常见init方式"><a href="#三种常见init方式" class="headerlink" title="三种常见init方式"></a>三种常见init方式</h5><ol>
+<li><p>传入data,label方式构建  </p>
+<p><strong>Args说明</strong><br><code>data (list or numpy array)</code><br><code>labels (list or numpy array)</code><br> <strong>转换</strong><br> <code>self.data = torch.tensor(data)</code><br> <code>self.labels = torch.tensor(labels)</code>  </p>
+</li>
+<li><p>传入pd.DataFrame方式构建</p>
+<p><strong>Args说明</strong><br><code>dataframe : pd.DataFrame</code><br><code>datafram[&#39;labels&#39;]存储标签信息</code><br><strong>转换</strong><br><code>self.data = torch.tensor(dataframe.values)</code><br><code>self.labels = torch.tensor(dataframe[&#39;labels&#39;].values)</code>  </p>
+</li>
+<li><p>传入数据集路径构建</p>
+</li>
+</ol>
+<h4 id="1-3-def-len-self"><a href="#1-3-def-len-self" class="headerlink" title="1.3 def len(self)"></a>1.3 def <strong>len</strong>(self)</h4><pre><code class="hljs">该函数返回所有数据集中样本的总数，该函数被Dataloader调用从而决定每一个epoch的批量大小
+</code></pre>
+<p><code>return len(self.data)</code></p>
+<h4 id="1-4-def-getitem-self-index"><a href="#1-4-def-getitem-self-index" class="headerlink" title="1.4 def getitem(self,index)"></a>1.4 def <strong>getitem</strong>(self,index)</h4><pre><code class="hljs">该函数根据给定的index返回下标所指的data和对应label，被Dataloader调用来取特定的下标元素，返回的data和label需要tuple形式  
+</code></pre>
+<p><code>return self.data[index],self.labels[index]</code></p>
+<h3 id="2-DataLoader"><a href="#2-DataLoader" class="headerlink" title="2. DataLoader"></a>2. DataLoader</h3><pre><code class="hljs">from torch.utils.data import DataLoader  
+</code></pre>
+<h4 id="2-1-实例化数据集类"><a href="#2-1-实例化数据集类" class="headerlink" title="2.1 实例化数据集类"></a>2.1 实例化数据集类</h4><p>   <code>my_dataset = yourDatasetName(args....)</code>  </p>
+<h4 id="2-2-参数"><a href="#2-2-参数" class="headerlink" title="2.2 参数"></a>2.2 参数</h4><p>   <code>batch_size = 32</code>&#x2F;&#x2F;越大越好，大了可能gpu受不住<br>   <code>shuffle = True</code> &#x2F;&#x2F;在每个epoch开始前打乱一边数据<br>   <code>num_workers = 2</code>  </p>
+<h4 id="2-3-创建DataLoader"><a href="#2-3-创建DataLoader" class="headerlink" title="2.3 创建DataLoader"></a>2.3 创建DataLoader</h4><p>   <code>my_dataloader = DataLoader(my_dataset)</code> </p>
+<h4 id="2-4-使用"><a href="#2-4-使用" class="headerlink" title="2.4 使用"></a>2.4 使用</h4><p>   <code>for batch_data, batch_labels in my_dataloader:</code>  </p>
+<h2 id="三-模型选择与构建"><a href="#三-模型选择与构建" class="headerlink" title="三. 模型选择与构建"></a>三. 模型选择与构建</h2><pre><code class="hljs">import torch
+import torch.nn as nn
+import torch.nn.functional as F
+</code></pre>
+<h3 id="1-自己构建子类"><a href="#1-自己构建子类" class="headerlink" title="1. 自己构建子类"></a>1. 自己构建子类</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs ruby"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyNeuralNetwork</span>(nn.<span class="hljs-title class_">Module</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params"><span class="hljs-variable language_">self</span>, input_size, hidden_size, output_size</span>):<br>        <span class="hljs-variable language_">super</span>(<span class="hljs-title class_">MyNeuralNetwork</span>, <span class="hljs-variable language_">self</span>).__init__()<br><br>        <span class="hljs-comment"># Define your layers</span><br>        <span class="hljs-variable language_">self</span>.fc1 = nn.<span class="hljs-title class_">Linear</span>(input_size, hidden_size)<br>        <span class="hljs-variable language_">self</span>.fc2 = nn.<span class="hljs-title class_">Linear</span>(hidden_size, output_size)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params"><span class="hljs-variable language_">self</span>, x</span>):<br>        <span class="hljs-comment"># Define the forward pass</span><br>        x = F.relu(<span class="hljs-variable language_">self</span>.fc1(x))<br>        x = <span class="hljs-variable language_">self</span>.fc2(x)<br>        <span class="hljs-keyword">return</span> x<br></code></pre></td></tr></table></figure>
+<ol>
+<li>init方法初始化神经网络的所有层  </li>
+<li>forward方法定义前向传播</li>
+</ol>
+<h3 id="2-残差块"><a href="#2-残差块" class="headerlink" title="2. 残差块"></a>2. 残差块</h3><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Residual</span>(<span class="hljs-title">nn</span>.<span class="hljs-type">Module</span>):</span><br><span class="hljs-class">    def __init__(<span class="hljs-title">self</span>, <span class="hljs-title">input_channels</span>, <span class="hljs-title">output_channels</span>, <span class="hljs-title">conv1_stride</span>, <span class="hljs-title">conv2_stride</span>, <span class="hljs-title">use_1x1conv</span>=<span class="hljs-type">False</span>) -&gt; <span class="hljs-type">None</span>:</span><br><span class="hljs-class">        super().__init__()</span><br><span class="hljs-class">        self.conv1 = nn.<span class="hljs-type">Conv2d</span>(<span class="hljs-title">input_channels</span>, <span class="hljs-title">output_channels</span>,</span><br><span class="hljs-class">                               <span class="hljs-title">kernel_size</span>=(3, 1), padding=(1, 0),</span><br><span class="hljs-class">                               stride=conv1_stride)</span><br><span class="hljs-class">        self.conv2 = nn.<span class="hljs-type">Conv2d</span>(<span class="hljs-title">output_channels</span>, <span class="hljs-title">output_channels</span>,</span><br><span class="hljs-class">                               <span class="hljs-title">kernel_size</span>=(3, 1), padding=(1, 0),</span><br><span class="hljs-class">                               stride=conv2_stride)</span><br><span class="hljs-class">        self.bn1 = nn.<span class="hljs-type">BatchNorm2d</span>(<span class="hljs-title">output_channels</span>)</span><br><span class="hljs-class">        self.bn2 = nn.<span class="hljs-type">BatchNorm2d</span>(<span class="hljs-title">output_channels</span>)</span><br><span class="hljs-class">        if use_1x1conv:</span><br><span class="hljs-class">            self.conv1x1 = nn.<span class="hljs-type">Conv2d</span>(</span><br><span class="hljs-class">                <span class="hljs-title">input_channels</span>, <span class="hljs-title">output_channels</span>, <span class="hljs-title">kernel_size</span>=1, <span class="hljs-title">stride</span>=<span class="hljs-title">conv1_stride</span>)</span><br><span class="hljs-class">        else:</span><br><span class="hljs-class">            self.conv1x1 = <span class="hljs-type">None</span></span><br><span class="hljs-class"></span><br><span class="hljs-class">    def forward(<span class="hljs-title">self</span>, <span class="hljs-type">X</span>):</span><br><span class="hljs-class">        <span class="hljs-type">Y</span> = <span class="hljs-type">F</span>.relu(<span class="hljs-title">self</span>.<span class="hljs-title">bn1</span>(<span class="hljs-title">self</span>.<span class="hljs-title">conv1</span>(<span class="hljs-type">X</span>)))</span><br><span class="hljs-class">        <span class="hljs-type">Y</span> = (<span class="hljs-title">self</span>.<span class="hljs-title">bn2</span>(<span class="hljs-title">self</span>.<span class="hljs-title">conv2</span>(<span class="hljs-type">Y</span>)))</span><br><span class="hljs-class">        if self.conv1x1:</span><br><span class="hljs-class">            <span class="hljs-type">X</span> = self.conv1x1(<span class="hljs-type">X</span>)</span><br><span class="hljs-class">        <span class="hljs-type">Y</span> += <span class="hljs-type">X</span></span><br><span class="hljs-class">        return <span class="hljs-type">F</span>.relu(<span class="hljs-type">Y</span>)</span><br><span class="hljs-class"></span><br></code></pre></td></tr></table></figure>
+<h3 id="3-初始卷积层"><a href="#3-初始卷积层" class="headerlink" title="3. 初始卷积层"></a>3. 初始卷积层</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs ruby"><span class="hljs-keyword">class</span> stem(nn.<span class="hljs-title class_">Module</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params"><span class="hljs-variable language_">self</span>, input_channels, output_channels</span>) -&gt; <span class="hljs-title class_">None</span>:<br>        <span class="hljs-variable language_">super</span>().__init__()<br>        <span class="hljs-variable language_">self</span>.conv = nn.<span class="hljs-title class_">Conv2d</span>(input_channels, output_channels,<br>                              kernel_size=(<span class="hljs-number">3</span>, <span class="hljs-number">1</span>), padding=(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>), stride=<span class="hljs-number">1</span>)<br>        <span class="hljs-variable language_">self</span>.bn = nn.<span class="hljs-title class_">BatchNorm2d</span>(output_channels)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params"><span class="hljs-variable language_">self</span>, X</span>):<br>        <span class="hljs-keyword">return</span> F.relu(<span class="hljs-variable language_">self</span>.bn(<span class="hljs-variable language_">self</span>.conv(X)))<br></code></pre></td></tr></table></figure>
+<h3 id="4-叠buff"><a href="#4-叠buff" class="headerlink" title="4. 叠buff"></a>4. 叠buff</h3><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> model(<span class="hljs-title">nn</span>.<span class="hljs-type">Module</span>):</span><br><span class="hljs-class">    def __init__(<span class="hljs-title">self</span>) -&gt; <span class="hljs-type">None</span>:</span><br><span class="hljs-class">        super().__init__()</span><br><span class="hljs-class">        self.embed=nn.<span class="hljs-type">Embedding</span>(256,119)</span><br><span class="hljs-class">        self.stem=stem(1,16)</span><br><span class="hljs-class">        self.ress=nn.<span class="hljs-type">Sequential</span>(</span><br><span class="hljs-class">            <span class="hljs-type">Residual</span>(16, 32, 1, 1, <span class="hljs-title">use_1x1conv</span>=<span class="hljs-type">True</span>),</span><br><span class="hljs-class">            <span class="hljs-type">Residual</span>(32, 128, 2, 1, <span class="hljs-title">use_1x1conv</span>=<span class="hljs-type">True</span>),</span><br><span class="hljs-class">            <span class="hljs-type">Residual</span>(128, 256, 2, 1, <span class="hljs-title">use_1x1conv</span>=<span class="hljs-type">True</span>),</span><br><span class="hljs-class">            <span class="hljs-type">Residual</span>(256, 512, 2, 1, <span class="hljs-title">use_1x1conv</span>=<span class="hljs-type">True</span>),</span><br><span class="hljs-class">        )</span><br><span class="hljs-class">        self.avgpool=nn.<span class="hljs-type">AdaptiveAvgPool2d</span>(1)</span><br><span class="hljs-class">        self.linear=nn.<span class="hljs-type">Sequential</span>(</span><br><span class="hljs-class">            <span class="hljs-title">nn</span>.<span class="hljs-type">Flatten</span>(),</span><br><span class="hljs-class">            nn.<span class="hljs-type">Linear</span>(512,26)</span><br><span class="hljs-class">        )</span><br><span class="hljs-class">    def forward(<span class="hljs-title">self</span>,<span class="hljs-type">X</span>):</span><br><span class="hljs-class">        <span class="hljs-type">X</span>=self.embed(<span class="hljs-type">X</span>)</span><br><span class="hljs-class">        <span class="hljs-type">X</span>=self.stem(<span class="hljs-type">X</span>)</span><br><span class="hljs-class">        <span class="hljs-type">X</span>=self.ress(<span class="hljs-type">X</span>)</span><br><span class="hljs-class">        return self.linear(<span class="hljs-title">self</span>.<span class="hljs-title">avgpool</span>(<span class="hljs-type">X</span>))</span><br></code></pre></td></tr></table></figure>
+<h2 id="四-训练"><a href="#四-训练" class="headerlink" title="四. 训练"></a>四. 训练</h2><figure class="highlight leaf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs leaf">def train(model, device, train_loader, optimizer, criterion,scheduler):<br>    time_start=time.time()<br>    predictions = []<br>    targets = []<br>    train_recall=[]<br>    train_acc=[]<br>    train_loss=[]<br>    model.train()<br>    for batch, datas in enumerate(train_loader):<br>        <span class="hljs-punctuation">#</span><span class="hljs-keyword">print</span><span class="hljs-params">(<span class="hljs-string">&quot;batch numbers:&#123;&#125;&quot;</span>.<span class="hljs-keyword">format</span><span class="hljs-params">(<span class="hljs-keyword">len</span><span class="hljs-params">(<span class="hljs-variable">train_loader</span>)</span>)</span>)</span><br>        x, y = datas<br>        if device == &#x27;cuda&#x27;:<br>            x, y = x.cuda(), y.cuda()<br><br>        <span class="hljs-punctuation">#</span> 输入一个批量的数据，x.shape为[batch_size,num_features]<br>        y_hat,featuremap = model(x.reshape(-1, 1, 119).long())<br>        <span class="hljs-punctuation">#</span> print(featuremap,featuremap.size())<br>        del featuremap<br>        <span class="hljs-punctuation">#</span> 输出为批量中每个元素的预测值，y_hat.shape为[batch_size,num_classes]<br>        _, pre_y = torch.max(y_hat, dim=1)<br>        loss = criterion(y_hat, y)<br>        acc = torch.sum(y == pre_y)<br>        <span class="hljs-punctuation">#</span> recall=recall_score(pre_y,y,average=&#x27;micro&#x27;)<br>        y,pre_y,acc=y.cpu(),pre_y.cpu(),acc.cpu()<br>        recall=recall_score(y,pre_y,average=metrix_mode,zero_division=1)<br>        <br>        train_recall.append(recall)<br>        train_acc.append(acc)<br>        loss.backward()<br>        optimizer.step()<br>        optimizer.zero_grad()<br>        train_loss.append(loss.cpu().data)<br>        predictions.extend(pre_y.cpu().numpy())<br>        targets.extend(y.cpu().numpy())<br>        scheduler.step()<br>        if (batch+1)%20==0:<br>            time_end=time.time()<br>            <span class="hljs-punctuation">#</span><span class="hljs-keyword">print</span><span class="hljs-params">(<span class="hljs-string">&quot;pre:&#123;&#125;,target:&#123;&#125;&quot;</span>.<span class="hljs-keyword">format</span><span class="hljs-params">(<span class="hljs-variable">predictions</span>,<span class="hljs-variable">targets</span>)</span>)</span><br>            <span class="hljs-punctuation">#</span><span class="hljs-keyword">print</span><span class="hljs-params">(<span class="hljs-string">&quot;pre:&quot;</span>,<span class="hljs-keyword">Counter</span><span class="hljs-params">(<span class="hljs-variable">predictions</span>)</span>)</span><br>            <span class="hljs-punctuation">#</span><span class="hljs-keyword">print</span><span class="hljs-params">(<span class="hljs-string">&quot;tar:&quot;</span>,<span class="hljs-keyword">Counter</span><span class="hljs-params">(<span class="hljs-variable">targets</span>)</span>)</span><br>            print(&quot;batch:&#123;&#125;/&#123;&#125;,loss:&#123;:.5f&#125;,train_recall:&#123;:.5f&#125;,train_acc:&#123;:.5f&#125;,time cost:&#123;:.2f&#125;&quot;.format(<br>                batch+1,<br>                len(train_loader),<br>                np.mean(train_loss)/batch_size,<br>                np.mean(train_recall),<br>                np.mean(train_acc)/batch_size,<br>                time_end-time_start))<br>            time_start=time.time()<br>    f1 = f1_score(targets, predictions,average=metrix_mode,zero_division=1)<br>    precision = precision_score(targets, predictions,average=metrix_mode,zero_division=1)<br>    accuracy = accuracy_score(targets, predictions)<br>    recall = recall_score(targets, predictions,average=metrix_mode,zero_division=1)<br><br>    return f1, precision, accuracy, recall<br></code></pre></td></tr></table></figure>
+<h2 id="五-验证"><a href="#五-验证" class="headerlink" title="五. 验证"></a>五. 验证</h2><figure class="highlight leaf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs leaf">def evaluate(model, device, data_loader,criterion):<br>    model.eval()<br>    predictions = []<br>    targets = []<br>    valid_loss=[]<br>    with torch.no_grad():<br>        for batch,datas in enumerate(data_loader):<br>            data,target=datas<br>            data, target = data.to(device), target.to(device)<br>            output,featuremap = model(data.reshape(-1,1,119).long())<br>            del featuremap<br>            loss=criterion(output,target)<br>            valid_loss.append(loss.cpu().data)<br>            pred = output.argmax(dim=1, keepdim=True)<br>            <br>            predictions.extend(pred.cpu().numpy())<br>            targets.extend(target.cpu().numpy())<br>            if (batch+1)%5==0:<br>                print(&quot;batch&#123;&#125;,valid loss:&#123;:.5f&#125;,valid acc:&#123;:.4f&#125;&quot;.format(<br>                        batch+1,np.mean(valid_loss)/batch_size,accuracy_score(targets, predictions)))<br><br>    f1 = f1_score(targets, predictions,average=metrix_mode,zero_division=1)<br>    precision = precision_score(targets, predictions,average=metrix_mode,zero_division=1)<br>    accuracy = accuracy_score(targets, predictions)<br>    recall = recall_score(targets, predictions,average=metrix_mode,zero_division=1)<br>    <span class="hljs-punctuation">#</span><span class="hljs-keyword">print</span><span class="hljs-params">(<span class="hljs-keyword">Counter</span><span class="hljs-params">(<span class="hljs-variable">predictions</span>)</span>)</span><br>    <span class="hljs-punctuation">#</span><span class="hljs-keyword">print</span><span class="hljs-params">(<span class="hljs-keyword">Counter</span><span class="hljs-params">(<span class="hljs-variable">targets</span>)</span>)</span><br>    return f1, precision, accuracy, recall<br></code></pre></td></tr></table></figure>
+<h2 id="六-训练-k-fold-crossValidation"><a href="#六-训练-k-fold-crossValidation" class="headerlink" title="六. 训练+k-fold-crossValidation"></a>六. 训练+k-fold-crossValidation</h2><p><code>skf=KFold(n_splits=k,shuffle=True,random_state=8)</code>  </p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment"># start training</span><br>f1_scores=[]<br>precision_scores=[]<br>accuracy_scores=[]<br>recall_scores=[]<br><br><span class="hljs-keyword">for</span> fold, (train_indices, test_indices) <span class="hljs-keyword">in</span> enumerate(skf.split(train_set_full)):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Fold&#123;&#125;/&#123;&#125;&quot;</span>.format(fold+1, k))<br><br>    <span class="hljs-attribute">train_sampler</span>=torch.utils.data.WeightedRandomSampler(<br>        weights[train_indices],<br>        40000,<br>        <span class="hljs-literal">True</span><br>    )<br>    <span class="hljs-attribute">test_sampler</span>=torch.utils.data.WeightedRandomSampler(<br>        weights[test_indices],<br>        10000,<br>        <span class="hljs-literal">True</span><br>    )<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;init sampler success&quot;</span>)<br>    train_loader = torch.utils.data.DataLoader(<br>        torch.utils.data.Subset(train_set_full, train_indices),<br>        <span class="hljs-attribute">shuffle</span>=<span class="hljs-literal">True</span>,<br>        <span class="hljs-attribute">batch_size</span>=batch_size, <br>        )<br>    <span class="hljs-attribute">valid_loader</span>=torch.utils.data.DataLoader(<br>        torch.utils.data.Subset(train_set_full,test_indices),<br>        <span class="hljs-attribute">batch_size</span>=batch_size,<br>    )<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;init dataloader success&quot;</span>)<br>    module = model()<br>    module = module.<span class="hljs-keyword">to</span>(<span class="hljs-attribute">device</span>=device)<br>    loss_f = torch.nn.CrossEntropyLoss()<br>    loss_f = loss_f.<span class="hljs-keyword">to</span>(<span class="hljs-attribute">device</span>=device)<br>    opt = torch.optim.Adam(module.parameters(), <span class="hljs-attribute">lr</span>=learning_rate)<br>   <span class="hljs-built_in"> scheduler </span>= torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(<br>            <span class="hljs-attribute">eta_min</span>=1e-6,<br>            <span class="hljs-attribute">optimizer</span>=opt,<br>            <span class="hljs-attribute">T_0</span>=5)<br>    <br>    <span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> range(epoche_num):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;epoch:&#123;&#125;/&#123;&#125;&quot;</span>.format(epoch+1,epoche_num))<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;----training----&quot;</span>)<br>        train(<span class="hljs-attribute">model</span>=module,<br>              <span class="hljs-attribute">device</span>=device,<br>              <span class="hljs-attribute">train_loader</span>=train_loader,<br>              <span class="hljs-attribute">optimizer</span>=opt,<br>              <span class="hljs-attribute">criterion</span>=loss_f,<br>              <span class="hljs-attribute">scheduler</span>=scheduler)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;train finished,begin valid&quot;</span>)<br>        evaluate(module, <br>                 device, <br>                 valid_loader,<br>                 loss_f)<br>        <br>    <span class="hljs-attribute">time_foldstart</span>=time.time()<br>    f1, precision, accuracy, recall = evaluate(module, device, valid_loader,loss_f)<br>    <span class="hljs-attribute">time_foldend</span>=time.time()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;time cost:&#123;:.2f&#125;&quot;</span>.format(time_foldend-time_foldstart))<br>    <span class="hljs-built_in">print</span>(f<span class="hljs-string">&quot;F1-score: &#123;f1&#125;&quot;</span>)<br>    <span class="hljs-built_in">print</span>(f<span class="hljs-string">&quot;Precision: &#123;precision&#125;&quot;</span>)<br>    <span class="hljs-built_in">print</span>(f<span class="hljs-string">&quot;Accuracy: &#123;accuracy&#125;&quot;</span>)<br>    <span class="hljs-built_in">print</span>(f<span class="hljs-string">&quot;Recall: &#123;recall&#125;&quot;</span>)<br><br>    # Append the evaluation metrics <span class="hljs-keyword">to</span> the lists<br>    f1_scores.append(f1)<br>    precision_scores.append(precision)<br>    accuracy_scores.append(accuracy)<br>    recall_scores.append(recall)<br>torch.save(module,<span class="hljs-string">&#x27;module&#x27;</span>)<br></code></pre></td></tr></table></figure>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Pytorch/" class="print-no-link">#Pytorch</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>the basic use of Pytorch</div>
+      <div>http://lightningsr.github.io/2024/01/02/pytorch/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Lightning</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/01/hexo+github%E4%BD%BF%E7%94%A8/" title="Hexo+Fluid+Github">
+                        <span class="hidden-mobile">Hexo+Fluid+Github</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
