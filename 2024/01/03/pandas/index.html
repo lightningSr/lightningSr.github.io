@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://lightningsr.github.io/image/post/dfHead.jpg">
 <meta property="article:published_time" content="2024-01-03T07:39:09.000Z">
-<meta property="article:modified_time" content="2024-01-03T09:32:09.958Z">
+<meta property="article:modified_time" content="2024-01-03T09:44:59.452Z">
 <meta property="article:author" content="Lightning">
 <meta property="article:tag" content="pandas">
 <meta name="twitter:card" content="summary_large_image">
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          433 字
+          432 字
         
       </span>
     
@@ -309,7 +309,7 @@
 <h3 id="3-用List新建一列"><a href="#3-用List新建一列" class="headerlink" title="3. 用List新建一列"></a>3. 用List新建一列</h3><p><code>df[&#39;weight&#39;]=weight_list</code><br><code>weight_list = list(df[&#39;weight&#39;])</code></p>
 <h3 id="4-新建DataFrame"><a href="#4-新建DataFrame" class="headerlink" title="4. 新建DataFrame"></a>4. 新建DataFrame</h3><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">f1</span>=[<span class="hljs-number">99</span>.<span class="hljs-number">06</span>,<span class="hljs-number">99</span>.<span class="hljs-number">15</span>,<span class="hljs-number">97</span>.<span class="hljs-number">77</span>,<span class="hljs-number">98</span>.<span class="hljs-number">40</span>,<span class="hljs-number">99</span>.<span class="hljs-number">25</span>]<br><span class="hljs-attribute">precision</span>=[<span class="hljs-number">98</span>.<span class="hljs-number">97</span>,<span class="hljs-number">99</span>.<span class="hljs-number">18</span>,<span class="hljs-number">96</span>.<span class="hljs-number">67</span>,<span class="hljs-number">99</span>.<span class="hljs-number">80</span>,<span class="hljs-number">99</span>.<span class="hljs-number">52</span>]<br><span class="hljs-attribute">accuracy</span>=[<span class="hljs-number">99</span>.<span class="hljs-number">06</span>,<span class="hljs-number">99</span>.<span class="hljs-number">15</span>,<span class="hljs-number">97</span>.<span class="hljs-number">73</span>,<span class="hljs-number">98</span>.<span class="hljs-number">41</span>,<span class="hljs-number">99</span>.<span class="hljs-number">27</span>]<br><span class="hljs-attribute">recall</span>=[<span class="hljs-number">99</span>.<span class="hljs-number">16</span>,<span class="hljs-number">99</span>.<span class="hljs-number">12</span>,<span class="hljs-number">99</span>.<span class="hljs-number">98</span>,<span class="hljs-number">97</span>.<span class="hljs-number">03</span>,<span class="hljs-number">98</span>.<span class="hljs-number">99</span>]<br>  <br><span class="hljs-attribute">import</span> pandas as pd<br><span class="hljs-attribute">result</span>=pd.DataFrame(&#123;&#x27;f1&#x27;:f1,&#x27;recall&#x27;:recall,&#x27;precision&#x27;:precision,&#x27;accuracy&#x27;:accuracy&#125;).applymap(<span class="hljs-string">&quot;&#123;:.04f&#125;&quot;</span>.format)<br><span class="hljs-attribute">result</span>.loc[len(result)]=[sum(recall)/<span class="hljs-number">5</span>,sum(f1)/<span class="hljs-number">5</span>,sum(accuracy)/<span class="hljs-number">5</span>,sum(precision)/<span class="hljs-number">5</span>]<br><span class="hljs-attribute">result</span>.rename(index=&#123;<span class="hljs-number">5</span>:&#x27;average&#x27;&#125;,inplace=True)<br><span class="hljs-attribute">result</span><br><br></code></pre></td></tr></table></figure>
 
-<p><strong>output</strong><br>！<a href="../image/post/DataFrame.png" title="output">dataframe</a></p>
+<p><strong>output</strong><br><img src="/../image/post/DataFrame.png" srcset="/img/loading.gif" lazyload alt="dataframe"></p>
 
                 
               </div>
